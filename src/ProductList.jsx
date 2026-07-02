@@ -1,4 +1,5 @@
-import  { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import './ProductList.css';
 import CartItem from './CartItem';
 import { addItem } from './CartSlice';
@@ -6,6 +7,9 @@ function ProductList({ onHomeClick }) {
   const [showCart, setShowCart] = useState(false);
   const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
   const [addedToCart, setAddedToCart] = useState({});
+  const dispatch = useDispatch();
+  const cart = useSelector(state => state.cart.items);
+  const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
 
   const plantsArray = [
     {
@@ -292,7 +296,7 @@ function ProductList({ onHomeClick }) {
   };
 
   const handleAddToCart = product => {
-    dispatchEvent(addItem(product));
+    dispatch(addItem(product));
 
     setAddedToCart(prevState => ({
       ...prevState,
@@ -347,6 +351,7 @@ function ProductList({ onHomeClick }) {
                     id="mainIconPathAttribute"
                   ></path>
                 </svg>
+                <span className="cart_quantity_count">{totalQuantity}</span>
               </h1>
             </a>
           </div>
@@ -394,8 +399,11 @@ function ProductList({ onHomeClick }) {
                         <button
                           className="product-button"
                           onClick={() => handleAddToCart(plant)} // Handle adding plant to cart
+                          disabled={addedToCart[plant.name]}
                         >
-                          Add to Cart
+                          {addedToCart[plant.name]
+                            ? 'Added to Cart'
+                            : 'Add to Cart'}
                         </button>
                       </div>
                     ),
